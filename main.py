@@ -1,19 +1,10 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 import pdfplumber
 from pymongo import MongoClient
 import google.generativeai as genai
 
 app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Configurações do MongoDB de forma local
 client = MongoClient("mongodb://localhost:27017")
@@ -36,7 +27,7 @@ pdf_content = {}
 
 @app.get("/")
 async def root():
-    return {"message": "Bem-vindo à API de Análise de Contratos!"}
+    return {"message": "Bem-vindo à API de Análise de PDF"}
 
 @app.post("/upload_pdf/")
 async def upload_pdf(file: UploadFile = File(...)):
