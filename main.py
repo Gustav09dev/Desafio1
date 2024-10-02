@@ -73,3 +73,8 @@ async def perguntar(filename: str, pergunta: str = Form(...)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="localhost", port=8000)
+
+
+#infelizmente meu trabalho me consumiu muito essa semana, isso foi tudo o que conseguir fazer com o tempo
+#fiquei relutante em enviar, mas segui o conselho do mano thales e é isso.
+#espero que gostem =)
