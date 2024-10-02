@@ -5,22 +5,20 @@ import pdfplumber
 from pymongo import MongoClient
 import google.generativeai as genai
 
-# Inicializa o FastAPI
 app = FastAPI()
 
-# Middleware para permitir CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permite todos os origens
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configurações do MongoDB
+# Configurações do MongoDB de forma local
 client = MongoClient("mongodb://localhost:27017")
-db = client['Guba']
-collection = db['respostas']
+db = client['nome do banco de dados']
+collection = db['nome da collection']
 
 # Função para extrair texto do PDF
 def extract_pdf(file):
@@ -30,18 +28,16 @@ def extract_pdf(file):
             text += page.extract_text()
     return text
 
-# Configurações do Google Generative AI
-genai.configure(api_key='YOUR_API_KEY')  # Coloque sua chave de API aqui
+#Google Generative AI
+genai.configure(api_key='sua chave')  
 
-# Variável para armazenar o conteúdo do PDF processado
+
 pdf_content = {}
 
-# Endpoint raiz
 @app.get("/")
 async def root():
     return {"message": "Bem-vindo à API de Análise de Contratos!"}
 
-# 1. Endpoint para upload do PDF e processamento pela IA
 @app.post("/upload_pdf/")
 async def upload_pdf(file: UploadFile = File(...)):
     text = extract_pdf(file.file)
@@ -53,7 +49,6 @@ async def upload_pdf(file: UploadFile = File(...)):
     pdf_content[file.filename] = text
     return JSONResponse(content={"message": "PDF processado com sucesso."})
 
-# 2. Endpoint para o usuário enviar uma pergunta sobre o PDF já processado
 @app.post("/perguntar/")
 async def perguntar(filename: str, pergunta: str = Form(...)):
     pdf_data = collection.find_one({"filename": filename})
@@ -64,13 +59,13 @@ async def perguntar(filename: str, pergunta: str = Form(...)):
     prompt = f"Texto do contrato:\n{text}\n\nPergunta: {pergunta}"
 
     try:
-        response = genai.generate_text(
+        response = genai.ChatSession(
             prompt=prompt,
             temperature=0.5,
             max_output_tokens=1000
         )
 
-        ia_response = response['text']  # Ajuste de acordo com a resposta retornada
+        ia_response = response['text'] 
 
         resposta_armazenada = {
             "filename": filename,
